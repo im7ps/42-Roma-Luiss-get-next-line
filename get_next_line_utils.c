@@ -6,45 +6,66 @@
 /*   By: sgerace <sgerace@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/09 18:39:22 by sgerace           #+#    #+#             */
-/*   Updated: 2022/04/09 18:39:59 by sgerace          ###   ########.fr       */
+/*   Updated: 2022/04/29 15:44:22 by sgerace          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 
-size_t	ft_strlen(const char *s)
+size_t	ft_strlen(const char *str)
+{
+	size_t	c;
+
+	c = 0;
+	if (!str)
+		return (0);
+	while (str[c] != '\0')
+		c++;
+	return (c);
+}
+
+char	*ft_strchr(char *s, int c)
 {
 	int	i;
 
 	i = 0;
-	while (*s != '\0')
+	if (!s)
+		return (0);
+	if (c == '\0')
+		return ((char *)&s[ft_strlen(s)]);
+	while (s[i] != '\0')
 	{
-		s++;
+		if (s[i] == (char) c)
+			return ((char *)&s[i]);
 		i++;
 	}
-	return (i);
+	return (0);
 }
 
-
-char	*ft_strjoin(char const *s1, char const *s2)
+char	*ft_strjoin(char *s1, char *s2)
 {
-	size_t		len1;
-	size_t		len2;
-	size_t		i;
-	char		*stack;
+	size_t	i;
+	size_t	c;
+	char	*str;
 
+	if (!s1)
+	{
+		s1 = (char *)malloc(1 * sizeof(char));
+		s1[0] = '\0';
+	}
 	if (!s1 || !s2)
 		return (NULL);
-	i = 0;
-	len1 = ft_strlen(s1);
-	len2 = ft_strlen(s2);
-	stack = (char *) malloc(sizeof(char) * (len1 + len2 + 1));
-	if (!stack)
+	str = malloc((ft_strlen(s1) + ft_strlen(s2) + 1) * sizeof(char));
+	if (str == NULL)
 		return (NULL);
-	while (*s1 != '\0')
-		stack[i++] = *s1++;
-	while (*s2 != '\0')
-		stack[i++] = *s2++;
-	stack[i] = '\0';
-	return (stack);
+	i = -1;
+	c = 0;
+	if (s1)
+		while (s1[++i] != '\0')
+			str[i] = s1[i];
+	while (s2[c] != '\0')
+		str[i++] = s2[c++];
+	str[ft_strlen(s1) + ft_strlen(s2)] = '\0';
+	free(s1);
+	return (str);
 }
