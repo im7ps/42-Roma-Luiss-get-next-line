@@ -6,37 +6,36 @@
 /*   By: sgerace <sgerace@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/09 15:12:41 by sgerace           #+#    #+#             */
-/*   Updated: 2022/04/29 15:47:53 by sgerace          ###   ########.fr       */
+/*   Updated: 2022/04/29 16:18:05 by sgerace          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
 #include <stdio.h>
 
-char	*get_line(char	*save)
+char	*get_line(char	*dst)
 {
 	char	*temp;
 	int		i;
 
 	i = 0;
-	while (save[i] && save[i] != '\n')
+	while (dst[i] && dst[i] != '\n')
 		i++;
 	temp = (char *) malloc (sizeof(char) * (i + 2));
 	temp[i + 2] = '\0';
 	i = 0;
-	while (save[i] && save[i] != '\n')
+	while (dst[i] && dst[i] != '\n')
 	{
-		temp[i] = save[i];
+		temp[i] = dst[i];
 		i++;
 	}
-	if (save[i] == '\n')
+	if (dst[i] == '\n')
 		temp[i] = '\n';
-	printf("Save: %s\n", save);
-	printf("Temp: %s\n", temp);
+	printf("Temp:\n%s", temp);
 	return (temp);
 }
 
-char	*read_save(int fd, char	*save)
+char	*read_save(int fd, char	*dst)
 {
 	int		char_num;
 	char	*buffer;
@@ -46,7 +45,7 @@ char	*read_save(int fd, char	*save)
 		return (NULL);
 	buffer[BUFFER_SIZE + 1] = '\0';
 	char_num = 1;
-	while (!ft_strchr(save, '\n') && char_num != 0)
+	while (!ft_strchr(dst, '\n') && char_num != 0)
 	{
 		char_num = read(fd, buffer, BUFFER_SIZE);
 		if (char_num == 0 && char_num == -1)
@@ -54,23 +53,24 @@ char	*read_save(int fd, char	*save)
 			free(buffer);
 			return (NULL);
 		}
-		save = ft_strjoin(save, buffer);
-		printf("Save: %s\n", save);
+		buffer[char_num] = '\0';
+		dst = ft_strjoin(dst, buffer);
+		printf("dst:\n%s", dst);
 	}
 	free (buffer);
-	return (save);
+	return (dst);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*save;
+	static char	*dst;
 	char		*the_line;
 
 	if (BUFFER_SIZE <= 0 && fd < 0)
 		return (NULL);
-	save = read_save(fd, save);
-	the_line = get_line(save);
-	return (save);
+	dst = read_save(fd, dst);
+	the_line = get_line(dst);
+	return (dst);
 }
 
 int	main	(void)
