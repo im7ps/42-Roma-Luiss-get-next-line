@@ -6,37 +6,37 @@
 /*   By: sgerace <sgerace@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/09 15:12:41 by sgerace           #+#    #+#             */
-/*   Updated: 2022/05/02 21:46:36 by sgerace          ###   ########.fr       */
+/*   Updated: 2022/05/04 16:09:02 by sgerace          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
-#include <stdio.h>
 
-char	*update_line(char *save)
+char	*update_line(char *current_line)
 {
 	int		i;
 	int		j;
-	char	*s;
+	char	*extra_char_array;
 
 	i = 0;
-	while (save[i] && save[i] != '\n')
+	while (current_line[i] && current_line[i] != '\n')
 		i++;
-	if (!save[i])
+	if (!current_line[i])
 	{
-		free(save);
+		free(current_line);
 		return (NULL);
 	}
-	s = (char *)malloc(sizeof(char) * (ft_strlen(save) - i + 1));
-	if (!s)
+	extra_char_array = (char *)malloc(sizeof(char) * (ft_strlen(current_line) - i + 1));
+	//printf("Avanzano questi char: %s", extra_char_array);
+	if (!extra_char_array)
 		return (NULL);
 	i++;
 	j = 0;
-	while (save[i])
-		s[j++] = save[i++];
-	s[j] = '\0';
-	free(save);
-	return (s);
+	while (current_line[i])
+		extra_char_array[j++] = current_line[i++];
+	extra_char_array[j] = '\0';
+	free(current_line);
+	return (extra_char_array);
 }
 
 char	*get_line(char	*dst)
@@ -97,23 +97,9 @@ char	*get_next_line(int fd)
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
 	dst = read_save(fd, dst);
-	if (!dst)                         //se non ci fosse questo controllo con un fd invalid andrebbe in SIGSEGV, perche?
+	if (!dst)
 		return (NULL);
 	the_line = get_line(dst);
 	dst = update_line(dst);
 	return (the_line);
 }
-
-// int	main(void)
-// {
-// 	int		fd;
-// 	int		i;
-
-// 	i = 0;
-// 	fd = open("test.txt", O_RDONLY);
-// 	while (i++ < 7)
-// 	{
-// 		printf("Result: %s", get_next_line(fd));
-// 	}
-// 	return (0);
-// }
