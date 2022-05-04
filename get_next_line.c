@@ -6,100 +6,125 @@
 /*   By: sgerace <sgerace@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/04/09 15:12:41 by sgerace           #+#    #+#             */
-/*   Updated: 2022/05/04 16:09:02 by sgerace          ###   ########.fr       */
+/*   Updated: 2022/05/04 19:30:20 by sgerace          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "get_next_line.h"
+#include <stdio.h>
 
-char	*update_line(char *current_line)
-{
-	int		i;
-	int		j;
-	char	*extra_char_array;
-
-	i = 0;
-	while (current_line[i] && current_line[i] != '\n')
-		i++;
-	if (!current_line[i])
-	{
-		free(current_line);
-		return (NULL);
-	}
-	extra_char_array = (char *)malloc(sizeof(char) * (ft_strlen(current_line) - i + 1));
-	//printf("Avanzano questi char: %s", extra_char_array);
-	if (!extra_char_array)
-		return (NULL);
-	i++;
-	j = 0;
-	while (current_line[i])
-		extra_char_array[j++] = current_line[i++];
-	extra_char_array[j] = '\0';
-	free(current_line);
-	return (extra_char_array);
-}
-
-char	*get_line(char	*dst)
+char	*store_extra_char(char	*buffer)
 {
 	char	*temp;
 	int		i;
+	int		j;
 
 	i = 0;
-	if (!dst[i])										//con un empty file il controllo nel main lo skippa mentre entra in questo if, ritornando subito null, perche non viene skippato anche questo? (forse nel main controllo se il puntatore punta a qualcosa in generale, qui proprio il primo elemento deve essere diverso da '\0')
-		return (NULL);
-	while (dst[i] && dst[i] != '\n')
+	while (buffer[i] != '\0' && buffer[i] != '\n')
 		i++;
-	temp = (char *) malloc (sizeof(char) * (i + 2));
+	if (buffer[i] == '\0')
+	{
+		free (buffer);
+		return (NULL);
+	}
+	temp = (char *) malloc (sizeof(char) * (ft_strlen(buffer) - i + 1));
 	if (!temp)
 		return (NULL);
-	i = 0;
-	while (dst[i] && dst[i] != '\n')
+	j = 0;
+	i++;
+	while (buffer[i] != '\0')
 	{
-		temp[i] = dst[i];
-		i++;
+		temp[j++] = buffer[i++];
 	}
-	if (dst[i] == '\n')
-		temp[i++] = '\n';
-	temp[i] = '\0';
-	// printf("Temp:\n%s", temp);
+	temp[j] = '\0';
+	free (buffer);
 	return (temp);
 }
 
-char	*read_save(int fd, char	*dst)
+char	*get_line(char	*buffer)
 {
-	int		char_num;
+	int		i;
+	char	*dst;
+
+	i = 0;
+	if (!buffer[i])		//potrebbe essere stata allocata ma contenere solo '\0'
+		return (NULL);
+	while (buffer[i] && buffer[i] != '\n')
+		i++;
+	dst = (char *) malloc (sizeof(char) * (i + 2));
+	if (!dst)
+		return (NULL);
+	i = 0;
+	while (buffer[i] && buffer[i] != '\n')
+	{
+		dst[i] = buffer[i];
+		i++;
+	}
+	if (buffer[i] == '\n')
+	{
+		dst[i] = '\n';
+		i++;
+	}
+	dst[i] = '\0';
+	return (dst);
+}
+
+char	*read_and_join(int fd, char	*dst)
+{
+	int		char_read;
 	char	*buffer;
 
-	buffer = (char *) malloc (sizeof(char) * (BUFFER_SIZE + 1));
+	buffer = (char *) malloc(sizeof(char) * (BUFFER_SIZE + 1));
 	if (!buffer)
 		return (NULL);
-	char_num = 1;
-	while (!ft_strchr(dst, '\n') && char_num != 0)
+	char_read = 1;
+	while (!ft_strchr(dst, '\n') && char_read != 0)
 	{
-		char_num = read(fd, buffer, BUFFER_SIZE);
-		if (char_num == -1)
+		char_read = read(fd, buffer, BUFFER_SIZE);
+		if (char_read == -1)
 		{
-			free(buffer);
+			free (buffer);
 			return (NULL);
 		}
-		buffer[char_num] = '\0';
+		buffer[char_read] = '\0';
 		dst = ft_strjoin(dst, buffer);
 	}
-	free(buffer);
+	free (buffer);
 	return (dst);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*dst;
-	char		*the_line;
+	char		*current_line;
+	static char	*buffer;
 
 	if (fd < 0 || BUFFER_SIZE <= 0)
 		return (NULL);
-	dst = read_save(fd, dst);
-	if (!dst)
+	buffer = read_and_join(fd, buffer);
+	if (!buffer)
 		return (NULL);
-	the_line = get_line(dst);
-	dst = update_line(dst);
-	return (the_line);
+	current_line = get_line(buffer);
+	// if (!current_line)
+	// 	return (NULL);
+	buffer = store_extra_char(buffer);
+	return (current_line);
+}
+
+int main(void)
+{
+ 	char *line;
+ 	int i;
+ 	int fd;
+
+ 	fd = open("tests/1.txt", O_RDONLY);
+	i = 1;
+ 	while (i < 7)
+ 	{
+ 		line = get_next_line(fd);
+ 		printf("Line: %s", line);
+ 		free(line);
+ 		i++;
+ 	}
+ 	close(fd);
+	return (0);
 }
