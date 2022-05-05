@@ -5,13 +5,13 @@
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgerace <sgerace@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/09 16:01:50 by sgerace           #+#    #+#             */
-/*   Updated: 2022/05/04 20:13:41 by sgerace          ###   ########.fr       */
+/*   Created: 2022/05/05 18:21:50 by sgerace           #+#    #+#             */
+/*   Updated: 2022/05/05 18:45:31 by sgerace          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef GET_NEXT_LINE_H
-# define GET_NEXT_LINE_H
+#ifndef GET_NEXT_LINE_BONUS_H
+# define GET_NEXT_LINE_BONUS_H
 
 # include <unistd.h>
 # include <stdlib.h>

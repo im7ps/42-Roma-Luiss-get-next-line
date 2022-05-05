@@ -1,17 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sgerace <sgerace@student.42roma.it>        +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2022/04/09 15:12:41 by sgerace           #+#    #+#             */
-/*   Updated: 2022/05/05 18:41:45 by sgerace          ###   ########.fr       */
+/*   Created: 2022/05/05 18:23:34 by sgerace           #+#    #+#             */
+/*   Updated: 2022/05/05 18:47:08 by sgerace          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
-#include <stdio.h>
+#include "get_next_line_bonus.h"
 
 char	*store_extra_char(char	*buffer)
 {
@@ -95,36 +94,17 @@ char	*read_and_join(int fd, char	*dst)
 
 char	*get_next_line(int fd)
 {
+	static char	*buffer[257];
 	char		*current_line;
-	static char	*buffer;
 
-	if (fd < 0 || BUFFER_SIZE <= 0)
+	if (fd < 0 || fd > 256 || BUFFER_SIZE <= 0)
 		return (NULL);
-	buffer = read_and_join(fd, buffer);
-	if (!buffer)
+	buffer[fd] = read_and_join(fd, buffer[fd]);
+	if (!buffer[fd])
 		return (NULL);
-	current_line = get_line(buffer);
+	current_line = get_line(buffer[fd]);
 	// if (!current_line)
 	// 	return (NULL);
-	buffer = store_extra_char(buffer);
+	buffer[fd] = store_extra_char(buffer[fd]);
 	return (current_line);
 }
-
-// int main(void)
-// {
-//  	char *line;
-//  	int i;
-//  	int fd;
-
-//  	fd = open("test.txt", O_RDONLY);
-// 	i = 0;
-//  	while (i < 3)
-//  	{
-//  		line = get_next_line(fd);
-//  		printf("Line: %s", line);
-//  		free(line);
-//  		i++;
-//  	}
-//  	close(fd);
-// 	return (0);
-// }
